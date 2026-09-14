@@ -140,7 +140,7 @@ export default function ProductFormModal({
 
           <div>
             <label htmlFor="price" className="mb-1.5 block text-sm font-medium text-slate-700">
-              Precio (USD)
+              Precio (MXN)
             </label>
             <input
               id="price"

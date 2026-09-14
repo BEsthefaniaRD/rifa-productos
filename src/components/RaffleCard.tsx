@@ -5,9 +5,9 @@ interface RaffleCardProps {
   raffle: Raffle
 }
 
-const currencyFormatter = new Intl.NumberFormat('es-AR', {
+const currencyFormatter = new Intl.NumberFormat('es-MX', {
   style: 'currency',
-  currency: 'USD',
+  currency: 'MXN',
   maximumFractionDigits: 2,
 })
 

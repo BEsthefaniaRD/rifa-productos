@@ -4,9 +4,9 @@ export function getTicketPrice(price: number): number {
   return Math.round(price * TICKET_PRICE_RATE * 100) / 100
 }
 
-const currencyFormatter = new Intl.NumberFormat('es-AR', {
+const currencyFormatter = new Intl.NumberFormat('es-MX', {
   style: 'currency',
-  currency: 'USD',
+  currency: 'MXN',
   maximumFractionDigits: 2,
 })
 
