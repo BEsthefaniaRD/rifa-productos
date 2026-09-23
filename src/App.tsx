@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
+import Products from './pages/Products'
 import Admin from './pages/Admin'
 import AdminProducts from './pages/admin/AdminProducts'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -12,10 +13,20 @@ function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route
+        path="/products"
+        element={
+          <ProtectedRoute>
+            <Products />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/admin"
         element={
           <ProtectedRoute>
-            <Admin />
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
           </ProtectedRoute>
         }
       />

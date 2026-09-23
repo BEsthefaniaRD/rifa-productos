@@ -40,16 +40,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let active = true
 
     async function loadSession(newSession: Session | null) {
+      // Se obtiene el perfil antes de publicar la sesión, para que sesión y rol
+      // cambien juntos y las redirecciones por rol nunca vean un rol a medias.
+      const userProfile = newSession?.user
+        ? await fetchProfile(newSession.user.id)
+        : null
+
+      if (!active) return
+
       setSession(newSession)
-
-      if (newSession?.user) {
-        const userProfile = await fetchProfile(newSession.user.id)
-        if (active) setProfile(userProfile)
-      } else {
-        setProfile(null)
-      }
-
-      if (active) setLoading(false)
+      setProfile(userProfile)
+      setLoading(false)
     }
 
     supabase.auth.getSession().then(({ data }) => loadSession(data.session))

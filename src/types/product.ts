@@ -13,3 +13,12 @@ export interface ProductInput {
   description: string
   price: number
 }
+
+// Lo único que ve un usuario normal: sin precio real, fechas ni estado.
+export interface AvailableProduct {
+  id: string
+  name: string
+  description: string
+  image_url: string | null
+  ticket_price: number
+}

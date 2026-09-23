@@ -1,5 +1,9 @@
 import type { Product } from '../../types/product'
-import { formatCurrency, getTicketPrice } from '../../utils/pricing'
+import {
+  formatCurrency,
+  getBreakEvenTickets,
+  getTicketPrice,
+} from '../../utils/pricing'
 
 interface ProductsTableProps {
   products: Product[]
@@ -24,12 +28,13 @@ export default function ProductsTable({
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-200">
-      <table className="w-full min-w-[860px] text-left text-sm">
+      <table className="w-full min-w-[980px] text-left text-sm">
         <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
           <tr>
             <th className="px-4 py-3 font-semibold">Producto</th>
             <th className="px-4 py-3 font-semibold">Precio</th>
             <th className="px-4 py-3 font-semibold">Boleto (7%)</th>
+            <th className="px-4 py-3 font-semibold">Boletos p/ cubrir 100%</th>
             <th className="px-4 py-3 font-semibold">Estado</th>
             <th className="px-4 py-3 font-semibold">Creado</th>
             <th className="px-4 py-3 font-semibold">Acciones</th>
@@ -62,6 +67,9 @@ export default function ProductsTable({
               </td>
               <td className="px-4 py-3 font-medium text-indigo-600">
                 {formatCurrency(getTicketPrice(product.price))}
+              </td>
+              <td className="px-4 py-3 font-medium text-slate-700">
+                {getBreakEvenTickets(product.price)}
               </td>
               <td className="px-4 py-3">
                 <span

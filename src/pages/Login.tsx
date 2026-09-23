@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
+import { notifySuccessfulLogin } from '../services/loginNotificationService'
 
 interface FormErrors {
   email?: string
@@ -14,8 +15,7 @@ function validateEmail(email: string): boolean {
 }
 
 export default function Login() {
-  const navigate = useNavigate()
-  const { session, loading: sessionLoading } = useAuth()
+  const { session, isAdmin, loading: sessionLoading } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -24,7 +24,7 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false)
 
   if (!sessionLoading && session) {
-    return <Navigate to="/admin" replace />
+    return <Navigate to={isAdmin ? '/admin' : '/products'} replace />
   }
 
   function validate(): boolean {
@@ -57,14 +57,17 @@ export default function Login() {
       email: email.trim(),
       password,
     })
-    setSubmitting(false)
-
     if (error) {
+      setSubmitting(false)
       setAuthError('Email o contraseña incorrectos. Intentá nuevamente.')
       return
     }
 
-    navigate('/admin', { replace: true })
+    // Sin await: la notificación no debe demorar ni bloquear el login.
+    void notifySuccessfulLogin()
+
+    // No se navega acá: cuando AuthContext cargue sesión y rol, el <Navigate>
+    // de arriba redirige a /admin o /products según corresponda.
   }
 
   return (

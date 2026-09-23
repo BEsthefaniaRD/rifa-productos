@@ -1,5 +1,9 @@
 import { supabase } from '../lib/supabaseClient'
-import type { Product, ProductInput } from '../types/product'
+import type {
+  AvailableProduct,
+  Product,
+  ProductInput,
+} from '../types/product'
 import { uploadProductImage } from './productStorage'
 
 export async function listProducts(): Promise<Product[]> {
@@ -13,6 +17,20 @@ export async function listProducts(): Promise<Product[]> {
   }
 
   return data as Product[]
+}
+
+// Para usuarios normales: solo productos activos, sin el precio real.
+export async function listAvailableProducts(): Promise<AvailableProduct[]> {
+  const { data, error } = await supabase.rpc('get_available_products')
+
+  if (error) {
+    throw new Error('No se pudieron cargar los productos.')
+  }
+
+  return (data as AvailableProduct[]).map((product) => ({
+    ...product,
+    ticket_price: Number(product.ticket_price),
+  }))
 }
 
 export async function createProduct(
