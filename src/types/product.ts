@@ -6,6 +6,8 @@ export interface Product {
   image_url: string | null
   active: boolean
   created_at: string
+  // Boletos ya apartados por los usuarios (suma de `tickets.quantity`)
+  sold_tickets: number
 }
 
 export interface ProductInput {
@@ -21,4 +23,5 @@ export interface AvailableProduct {
   description: string
   image_url: string | null
   ticket_price: number
+  available_tickets: number
 }

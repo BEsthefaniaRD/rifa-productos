@@ -1,12 +1,15 @@
 import type { AvailableProduct } from '../../types/product'
 import { formatCurrency } from '../../utils/pricing'
+import TicketSelector from './TicketSelector'
 
 interface AvailableProductsTableProps {
   products: AvailableProduct[]
+  onReserve: (product: AvailableProduct, quantity: number) => Promise<void>
 }
 
 export default function AvailableProductsTable({
   products,
+  onReserve,
 }: AvailableProductsTableProps) {
   if (products.length === 0) {
     return (
@@ -18,11 +21,13 @@ export default function AvailableProductsTable({
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-200">
-      <table className="w-full text-left text-sm">
+      <table className="w-full min-w-[760px] text-left text-sm">
         <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
           <tr>
             <th className="px-4 py-3 font-semibold">Producto</th>
             <th className="px-4 py-3 font-semibold">Precio del boleto</th>
+            <th className="px-4 py-3 font-semibold">Boletos disponibles</th>
+            <th className="px-4 py-3 font-semibold">Seleccionar boletos</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -49,6 +54,16 @@ export default function AvailableProductsTable({
               </td>
               <td className="px-4 py-3 font-medium text-indigo-600">
                 {formatCurrency(product.ticket_price)}
+              </td>
+              <td className="px-4 py-3 font-medium text-slate-700">
+                {product.available_tickets}
+              </td>
+              <td className="px-4 py-3">
+                <TicketSelector
+                  available={product.available_tickets}
+                  ticketPrice={product.ticket_price}
+                  onReserve={(quantity) => onReserve(product, quantity)}
+                />
               </td>
             </tr>
           ))}
