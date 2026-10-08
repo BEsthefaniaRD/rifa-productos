@@ -2,12 +2,15 @@ import { useState } from 'react'
 import { formatCurrency } from '../../utils/pricing'
 
 interface TicketSelectorProps {
+  // Si la venta no está abierta, el botón se bloquea y se muestra el motivo.
+  salesState: { open: boolean; message: string | null }
   available: number
   ticketPrice: number
   onReserve: (quantity: number) => Promise<void>
 }
 
 export default function TicketSelector({
+  salesState,
   available,
   ticketPrice,
   onReserve,
@@ -22,6 +25,8 @@ export default function TicketSelector({
       </span>
     )
   }
+
+  const blocked = !salesState.open
 
   // Si bajaron los disponibles, la cantidad elegida no puede quedar por encima.
   const current = Math.min(quantity, available)
@@ -47,7 +52,7 @@ export default function TicketSelector({
         <button
           type="button"
           onClick={() => changeQuantity(current - 1)}
-          disabled={saving || current <= 1}
+          disabled={blocked || saving || current <= 1}
           aria-label="Quitar un boleto"
           className="px-3 py-1.5 font-semibold text-slate-700 disabled:opacity-40"
         >
@@ -59,14 +64,14 @@ export default function TicketSelector({
           max={available}
           value={current}
           onChange={(e) => changeQuantity(e.target.valueAsNumber)}
-          disabled={saving}
+          disabled={blocked || saving}
           aria-label="Cantidad de boletos"
           className="w-14 border-x border-slate-300 py-1.5 text-center text-sm [appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
         <button
           type="button"
           onClick={() => changeQuantity(current + 1)}
-          disabled={saving || current >= available}
+          disabled={blocked || saving || current >= available}
           aria-label="Agregar un boleto"
           className="px-3 py-1.5 font-semibold text-slate-700 disabled:opacity-40"
         >
@@ -76,13 +81,18 @@ export default function TicketSelector({
       <button
         type="button"
         onClick={handleReserve}
-        disabled={saving}
-        className="rounded-full bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
+        disabled={blocked || saving}
+        className="rounded-full bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:hover:bg-slate-300"
       >
         {saving
           ? 'Apartando...'
           : `Apartar · ${formatCurrency(current * ticketPrice)}`}
       </button>
+      {salesState.message && (
+        <p className="w-full text-xs font-medium text-amber-600">
+          {salesState.message}
+        </p>
+      )}
     </div>
   )
 }

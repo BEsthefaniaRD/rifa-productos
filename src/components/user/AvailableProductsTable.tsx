@@ -1,6 +1,11 @@
+import { useEffect, useState } from 'react'
 import type { AvailableProduct } from '../../types/product'
 import { formatCurrency } from '../../utils/pricing'
+import { getSalesState } from '../../utils/raffleSchedule'
 import TicketSelector from './TicketSelector'
+
+// Cada cuánto se revisa si ya llegó la hora de inicio de la venta.
+const SALES_CHECK_INTERVAL_MS = 15_000
 
 interface AvailableProductsTableProps {
   products: AvailableProduct[]
@@ -11,6 +16,13 @@ export default function AvailableProductsTable({
   products,
   onReserve,
 }: AvailableProductsTableProps) {
+  const [now, setNow] = useState(() => new Date())
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), SALES_CHECK_INTERVAL_MS)
+    return () => clearInterval(timer)
+  }, [])
+
   if (products.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-slate-300 py-16 text-center text-slate-500">
@@ -60,6 +72,7 @@ export default function AvailableProductsTable({
               </td>
               <td className="px-4 py-3">
                 <TicketSelector
+                  salesState={getSalesState(product, now)}
                   available={product.available_tickets}
                   ticketPrice={product.ticket_price}
                   onReserve={(quantity) => onReserve(product, quantity)}

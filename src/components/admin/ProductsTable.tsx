@@ -1,4 +1,4 @@
-import type { Product } from '../../types/product'
+import type { Product, RaffleSchedule } from '../../types/product'
 import {
   formatCurrency,
   getBreakEvenTickets,
@@ -8,11 +8,16 @@ import {
   getTargetRevenue,
   getTicketPrice,
 } from '../../utils/pricing'
+import RaffleDatesCell from './RaffleDatesCell'
 
 interface ProductsTableProps {
   products: Product[]
   onEdit: (product: Product) => void
   onToggleActive: (product: Product) => void
+  onChangeSchedule: (
+    product: Product,
+    schedule: RaffleSchedule,
+  ) => Promise<void>
 }
 
 const dateFormatter = new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium' })
@@ -21,6 +26,7 @@ export default function ProductsTable({
   products,
   onEdit,
   onToggleActive,
+  onChangeSchedule,
 }: ProductsTableProps) {
   if (products.length === 0) {
     return (
@@ -45,6 +51,7 @@ export default function ProductsTable({
             <th className="px-2 py-2.5 font-semibold">Ganancia máxima</th>
             <th className="px-2 py-2.5 font-semibold">Vendidos</th>
             <th className="px-2 py-2.5 font-semibold">Por vender</th>
+            <th className="px-2 py-2.5 font-semibold">Fechas de la rifa</th>
             <th className="px-2 py-2.5 font-semibold">Estado</th>
             <th className="px-2 py-2.5 font-semibold">Creado</th>
             <th className="px-2 py-2.5 font-semibold">Acciones</th>
@@ -106,6 +113,17 @@ export default function ProductsTable({
                   getMaxTickets(product.price) - product.sold_tickets,
                   0,
                 )}
+              </td>
+              <td className="px-2 py-2">
+                <RaffleDatesCell
+                  schedule={{
+                    startsOn: product.raffle_starts_on,
+                    endsOn: product.raffle_ends_on,
+                    startTime: product.raffle_start_time,
+                    endTime: product.raffle_end_time,
+                  }}
+                  onSave={(schedule) => onChangeSchedule(product, schedule)}
+                />
               </td>
               <td className="px-2 py-2">
                 <span

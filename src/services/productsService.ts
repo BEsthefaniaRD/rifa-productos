@@ -3,6 +3,7 @@ import type {
   AvailableProduct,
   Product,
   ProductInput,
+  RaffleSchedule,
 } from '../types/product'
 import { uploadProductImage } from './productStorage'
 
@@ -45,6 +46,7 @@ export async function listAvailableProducts(): Promise<AvailableProduct[]> {
     ...product,
     ticket_price: Number(product.ticket_price),
     available_tickets: Number(product.available_tickets),
+    sales_open: Boolean(product.sales_open),
   }))
 }
 
@@ -112,6 +114,29 @@ export async function updateProduct(
 
   if (error) {
     throw new Error('No se pudo actualizar el producto.')
+  }
+
+  return toProduct(data as ProductRow)
+}
+
+export async function setRaffleSchedule(
+  id: string,
+  schedule: RaffleSchedule,
+): Promise<Product> {
+  const { data, error } = await supabase
+    .from('products')
+    .update({
+      raffle_starts_on: schedule.startsOn,
+      raffle_ends_on: schedule.endsOn,
+      raffle_start_time: schedule.startTime,
+      raffle_end_time: schedule.endTime,
+    })
+    .eq('id', id)
+    .select(PRODUCT_SELECT)
+    .single()
+
+  if (error) {
+    throw new Error('No se pudieron guardar las fechas.')
   }
 
   return toProduct(data as ProductRow)

@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { Product, ProductInput } from '../types/product'
+import type {
+  Product,
+  ProductInput,
+  RaffleSchedule,
+} from '../types/product'
 import {
   createProduct,
   listProducts,
   setProductActive,
+  setRaffleSchedule,
   updateProduct,
 } from '../services/productsService'
 
@@ -48,6 +53,11 @@ export function useProducts() {
     setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)))
   }
 
+  async function changeRaffleSchedule(id: string, schedule: RaffleSchedule) {
+    const updated = await setRaffleSchedule(id, schedule)
+    setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)))
+  }
+
   return {
     products,
     loading,
@@ -56,5 +66,6 @@ export function useProducts() {
     addProduct,
     editProduct,
     toggleActive,
+    changeRaffleSchedule,
   }
 }

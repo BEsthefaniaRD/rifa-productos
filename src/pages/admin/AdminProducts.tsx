@@ -7,8 +7,15 @@ import { useProducts } from '../../hooks/useProducts'
 import type { Product, ProductInput } from '../../types/product'
 
 export default function AdminProducts() {
-  const { products, loading, error, addProduct, editProduct, toggleActive } =
-    useProducts()
+  const {
+    products,
+    loading,
+    error,
+    addProduct,
+    editProduct,
+    toggleActive,
+    changeRaffleSchedule,
+  } = useProducts()
 
   const [formOpen, setFormOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -97,6 +104,9 @@ export default function AdminProducts() {
           <ProductsTable
             products={products}
             onEdit={openEditForm}
+            onChangeSchedule={(product, schedule) =>
+              changeRaffleSchedule(product.id, schedule)
+            }
             onToggleActive={(product) => {
               setConfirmError(null)
               setConfirmTarget(product)
