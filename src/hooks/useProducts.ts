@@ -11,6 +11,7 @@ import {
   setRaffleSchedule,
   updateProduct,
 } from '../services/productsService'
+import { useProductsChanges } from './useProductsChanges'
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([])
@@ -33,6 +34,14 @@ export function useProducts() {
   useEffect(() => {
     refresh()
   }, [refresh])
+
+  // Cambios hechos en otra pestaña o boletos apartados por usuarios: se
+  // recarga en silencio, sin mostrar "Cargando".
+  useProductsChanges(() => {
+    listProducts()
+      .then(setProducts)
+      .catch((err) => console.warn('No se pudo actualizar la lista:', err))
+  })
 
   async function addProduct(input: ProductInput, imageFile: File) {
     const created = await createProduct(input, imageFile)

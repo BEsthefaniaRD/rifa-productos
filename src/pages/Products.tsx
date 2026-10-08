@@ -6,6 +6,7 @@ import {
   reserveTickets,
 } from '../services/productsService'
 import type { AvailableProduct } from '../types/product'
+import { useProductsChanges } from '../hooks/useProductsChanges'
 
 export default function Products() {
   const [products, setProducts] = useState<AvailableProduct[]>([])
@@ -36,6 +37,14 @@ export default function Products() {
       active = false
     }
   }, [])
+
+  // Si el admin cambia algo o alguien aparta boletos, se recarga la lista sin
+  // mostrar "Cargando" ni perder lo que el usuario tiene en pantalla.
+  useProductsChanges(() => {
+    listAvailableProducts()
+      .then(setProducts)
+      .catch((err) => console.warn('No se pudo actualizar la lista:', err))
+  })
 
   async function handleReserve(product: AvailableProduct, quantity: number) {
     setReserveError(null)
